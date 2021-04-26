@@ -1,15 +1,21 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventModule } from '@squareboat/nest-events';
 import { UserModule } from './user';
-import { DbModule } from './_db';
 import config from '@config/index';
 import { CoreModule } from '@libs/core';
 import { ConsoleModule } from '@squareboat/nest-console';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
-    DbModule,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('db.uri'),
+      }),
+      inject: [ConfigService],
+    }),
     CoreModule,
     UserModule,
     EventModule,

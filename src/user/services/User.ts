@@ -1,28 +1,23 @@
-import { USER_REPOSITORY } from '../constants';
-import { Injectable, Inject, HttpService } from '@nestjs/common';
-import { UserRepositoryContract } from '../repositories';
+import { Injectable, Inject } from '@nestjs/common';
 import { ListensTo } from '@squareboat/nest-events';
 import { UserSignedUp } from '../events/UserSignedUp';
-import { InjectRepository, RepositoryContract } from '@libs/core';
 import { User } from '../models';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UserService {
-  @InjectRepository(User) private repo: RepositoryContract;
 
   constructor(
-    @Inject(USER_REPOSITORY) private users: UserRepositoryContract,
-    private http: HttpService,
+    @InjectModel(User.name)  private readonly userModel: Model<User>
   ) {}
 
   async get(): Promise<Record<string, any>> {
-    console.log(this.users);
-    console.log(this.repo);
-    return this.users.firstWhere({});
+    return this.userModel.find({});
   }
 
   getByToken(bearer: any): any {
-    throw new Error('Method not implemented.');
+    // throw new Error('Method not implemented.');
   }
 
   @ListensTo('USER_SIGNED_UP')
