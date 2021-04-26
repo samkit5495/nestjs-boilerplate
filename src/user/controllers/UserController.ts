@@ -14,9 +14,7 @@ export class UserController extends ApiController {
                @Res() res: Response,
   ): Promise<Response> {
     const user = await this.users.get();
-    return res.success(
-      await this.transform(user, new UserDetailTransformer(), { req }),
-    );
+    return res.success(user);
   }
 
   // @Get('/profile')
